@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="Data_Plan.css">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container pb">
         <!-- Mobile Navigation Button -->
         <div class="mobile-nav">
             <button class="hamburger" id="hamburgerBtn">
@@ -167,13 +167,13 @@
 
         function toggleSidebar() {
             hamburgerBtn.classList.toggle('active');
-            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
         }
 
         function closeSidebar() {
             hamburgerBtn.classList.remove('active');
-            sidebar.classList.add('hidden');
+            sidebar.classList.remove('active');
             overlay.classList.remove('active');
         }
 
@@ -204,7 +204,7 @@
         if (window.innerWidth <= 1024) {
             sidebar.classList.add('hidden');
         }
-
+        
         // Compare plans functionality
         function comparePlans() {
             // You can implement the compare plans logic here

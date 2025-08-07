@@ -295,13 +295,13 @@
 
         function toggleSidebar() {
             hamburgerBtn.classList.toggle('active');
-            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
         }
 
         function closeSidebar() {
             hamburgerBtn.classList.remove('active');
-            sidebar.classList.add('hidden');
+            sidebar.classList.remove('active');
             overlay.classList.remove('active');
         }
 
@@ -332,7 +332,7 @@
         if (window.innerWidth <= 1024) {
             sidebar.classList.add('hidden');
         }
-
+        
         // Expense functionality
         function addExpense() {
             showNotification('Add Expense feature coming soon!', 'error');

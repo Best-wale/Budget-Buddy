@@ -66,6 +66,9 @@
         .sidebar.hidden {
             transform: translateX(-100%);
         }
+         .sidebar.active {
+            transform: translateX(0);
+        }
 
         .logo-section {
             display: flex;
