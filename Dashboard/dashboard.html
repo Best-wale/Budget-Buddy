@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campus Budget Buddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="dashboard.css">
+</head>
+<body>
+    <div class="app-container pb ">
+        <!-- Mobile Navigation Button -->
+        <div class="mobile-nav ">
+            <button class="hamburger" id="hamburgerBtn">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+        </div>
+
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>Campus</h1>
+                    <p>Budget Buddy</p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fas fa-house"></i>
+                    Home
+                </a>
+                <a href="track_income.html" class="nav-link">
+                    <i class="fas fa-dollar-sign"></i>
+                    Track Income
+                </a>
+                <a href="saving_plans.html" class="nav-link">
+                    <i class="fas fa-piggy-bank"></i>
+                    Saving Plans
+                </a>
+                <a href="Expenses.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    Expenses
+                </a>
+                <a href="goals.html" class="nav-link">
+                    <i class="fas fa-bullseye"></i>
+                    Goals
+                </a>
+                <a href="Food_Budget.html" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    Food Budget
+                </a>
+                <a href="Data_Plan.html" class="nav-link">
+                    <i class="fas fa-mobile-alt"></i>
+                    Data Plans
+                </a>
+                <a href="find_store.html" class="nav-link">
+                    <i class="fas fa-location-dot"></i>
+                    Find Store
+                </a>
+            </div>
+
+            <div class="progress-card">
+                <h3>Monthly Goal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%;"></div>
+                </div>
+                <p class="progress-text">₦670 of ₦1,000</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Welcome back!</h1>
+                    <p>Here's your financial overview for the month</p>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Monthly Income</h3>
+                            <div class="stat-value">₦1,250</div>
+                            <p class="stat-description">
+                                <span class="positive">+12%</span> from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Expenses</h3>
+                            <div class="stat-value">₦980</div>
+                            <p class="stat-description">
+                                <span class="negative">+5%</span> from last month
+                            </p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Current Saving</h3>
+                            <div class="stat-value">₦670</div>
+                            <p class="stat-description">
+                                <span class="positive">67%</span> of monthly goal
+                            </p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Budget Remaining</h3>
+                            <div class="stat-value">₦270</div>
+                            <p class="stat-description">Available to save or spend</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="content-grid">
+                <!-- Savings Progress -->
+                <div class="savings-card">
+                    <h2>
+                        <i class="fas fa-piggy-bank"></i>
+                        Savings Goal Progress
+                    </h2>
+                    <div class="savings-summary">
+                        <h3>Monthly Goal</h3>
+                        <p>₦670 / ₦1,000</p>
+                    </div>
+                    <div class="savings-progress">
+                        <div class="savings-progress-fill" style="width: 67%;"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="savings-note">
+                        You need to save ₦330 more to reach your goal this month
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="actions-card">
+                    <h2>Quick Actions</h2>
+                    <button class="action-button" onclick="addIncome()">
+                        <span class="action-icon income">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        Add Income
+                    </button>
+                    <button class="action-button" onclick="logExpense()">
+                        <span class="action-icon expense">
+                            <i class="fas fa-arrow-down"></i>
+                        </span>
+                        Log Expense
+                    </button>
+                    <button class="action-button" onclick="setGoal()">
+                        <span class="action-icon goal">
+                            <i class="fas fa-bullseye"></i>
+                        </span>
+                        Set Goal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="transactions-card">
+                <div class="transactions-header">
+                    <h2>Recent Transactions</h2>
+                    <button class="view-all-btn" onclick="viewAllTransactions()">View all</button>
+                </div>
+                
+                <div class="transaction-item">
+                    <div class="transaction-details">
+                        <div class="transaction-icon income">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h4>Freelance Work</h4>
+                            <p>Today</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount positive">+₦150</div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-details">
+                        <div class="transaction-icon expense">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h4>Coffee Shop</h4>
+                            <p>Yesterday</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount negative">-₦25</div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-details">
+                        <div class="transaction-icon expense">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h4>Groceries</h4>
+                            <p>2 days ago</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount negative">-₦120</div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-details">
+                        <div class="transaction-icon income">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h4>Monthly Allowance</h4>
+                            <p>3 days ago</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount positive">+₦500</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile navigation functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            hamburgerBtn.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when clicking on navigation links on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                hamburgerBtn.classList.remove('active');
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+        });
+
+        // Initialize sidebar state based on screen size
+        if (window.innerWidth <= 1024) {
+            sidebar.classList.add('hidden');
+        }
+
+        // Quick action functions
+        function addIncome() {
+            showNotification('Add Income feature coming soon!', 'success');
+        }
+
+        function logExpense() {
+            showNotification('Log Expense feature coming soon!', 'info');
+        }
+
+        function setGoal() {
+            showNotification('Set Goal feature coming soon!', 'warning');
+        }
+
+        function viewAllTransactions() {
+            showNotification('View All Transactions feature coming soon!', 'info');
+        }
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--income-color)' : 
+                             type === 'warning' ? 'var(--warning-color)' : 
+                             'var(--primary-color)'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                z-index: 2000;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+            document.body.style.transition = 'opacity 0.3s ease';
+        });
+
+        // Add dynamic progress bar animation
+        setTimeout(() => {
+            const progressBars = document.querySelectorAll('.progress-fill, .savings-progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

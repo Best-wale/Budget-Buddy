@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saving Plans - Campus Budget Buddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #5A5CDE;
+            --primary-hover: #4A4BC9;
+            --income-color: #10B981;
+            --expense-color: #EF4444;
+            --warning-color: #F59E0B;
+            --savings-color: #059669;
+            --investment-color: #3B82F6;
+            --neutral-bg: #F8FAFC;
+            --muted-bg: #F1F5F9;
+            --text-muted: #64748B;
+            --text-dark: #1E293B;
+            --soft-border: #E2E8F0;
+            --soft-shadow: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--neutral-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --neutral-bg: #181818;
+                --muted-bg: #2A2A2A;
+                --text-muted: #9CA3AF;
+                --text-dark: #F8FAFC;
+                --soft-border: #374151;
+                --soft-shadow: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            width: 280px;
+            padding: 24px 20px;
+            border-right: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .brand-info h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .brand-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .navigation {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--muted-bg);
+            color: var(--text-dark);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--muted-bg), white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: auto;
+            border: 1px solid var(--soft-border);
+        }
+
+        .progress-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--soft-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--income-color), #34D399);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--soft-border);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background-color: var(--muted-bg);
+        }
+
+        .hamburger-line {
+            width: 20px;
+            height: 2px;
+            background-color: var(--text-dark);
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .hamburger.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--savings-color), #047857);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px var(--savings-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--savings-color), var(--income-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--savings-color);
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(5, 150, 105, 0.05));
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        /* Savings Plans */
+        .plans-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .plans-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .plans-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .plans-header h2 i {
+            margin-right: 12px;
+            color: var(--savings-color);
+        }
+
+        .plan-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--soft-border);
+            border-radius: 8px;
+            background: var(--muted-bg);
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--savings-color);
+            color: white;
+            border-color: var(--savings-color);
+        }
+
+        .plan-card {
+            background: var(--muted-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+            background: white;
+        }
+
+        .plan-card.recommended {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.05));
+            border-color: var(--savings-color);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            background: var(--savings-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .plan-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .plan-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .plan-features li i {
+            color: var(--savings-color);
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .plan-savings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(5, 150, 105, 0.1);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .savings-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--savings-color);
+        }
+
+        .savings-period {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .plan-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .plan-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--soft-border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .plan-btn.primary {
+            background: var(--savings-color);
+            color: white;
+            border-color: var(--savings-color);
+        }
+
+        .plan-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Sidebar Widgets */
+        .sidebar-widget {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+        }
+
+        .widget-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .widget-title i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        /* Savings Calculator */
+        .calculator-input {
+            margin-bottom: 16px;
+        }
+
+        .calculator-input label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .calculator-input input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--soft-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--muted-bg);
+            color: var(--text-dark);
+        }
+
+        .calculator-input input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calculate-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .calculator-result {
+            background: var(--muted-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .result-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--savings-color);
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Tips Section */
+        .tip-item {
+            display: flex;
+            padding: 12px;
+            background: var(--muted-bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .tip-item:hover {
+            background: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .tip-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--warning-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .tip-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .tip-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Progress Tracker */
+        .tracker-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--muted-bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tracker-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .tracker-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .tracker-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--savings-color);
+        }
+
+        /* Strategies Section */
+        .strategies-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            grid-column: 1 / -1;
+        }
+
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .strategy-card {
+            background: var(--muted-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
+            background: white;
+        }
+
+        .strategy-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--investment-color), var(--primary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .strategy-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .strategy-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .strategy-benefit {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--savings-color);
+            font-weight: 600;
+        }
+
+        .strategy-benefit i {
+            margin-right: 8px;
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .mobile-nav {
+                display: block;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 16px;
+            }
+
+            .strategies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-title h1 {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .plans-section,
+            .sidebar-widget,
+            .strategies-section {
+                padding: 24px;
+            }
+
+            .action-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .plan-filters {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-nav {
+                top: 16px;
+                left: 16px;
+            }
+
+            .main-content {
+                padding: 16px 12px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .plans-section,
+            .sidebar-widget,
+            .strategies-section {
+                padding: 20px;
+            }
+
+            .plan-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark mode specific styles */
+        @media (prefers-color-scheme: dark) {
+            .sidebar,
+            .stat-card,
+            .plans-section,
+            .sidebar-widget,
+            .strategies-section,
+            .mobile-nav {
+                background-color: #2A2A2A;
+                border-color: var(--soft-border);
+            }
+
+            .progress-card {
+                background: linear-gradient(135deg, var(--muted-bg), #2A2A2A);
+            }
+
+            .plan-card,
+            .strategy-card,
+            .tip-item,
+            .tracker-item {
+                background: #374151;
+                border-color: var(--soft-border);
+            }
+
+            .calculator-input input {
+                background: #374151;
+                border-color: var(--soft-border);
+            }
+
+            .calculator-result {
+                background: #374151;
+            }
+
+            .filter-btn {
+                background: #374151;
+                border-color: var(--soft-border);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Navigation Button -->
+        <div class="mobile-nav">
+            <button class="hamburger" id="hamburgerBtn">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+        </div>
+
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>Campus</h1>
+                    <p>Budget Buddy</p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-house"></i>
+                    Home
+                </a>
+                <a href="track_income.html" class="nav-link">
+                    <i class="fas fa-dollar-sign"></i>
+                    Track Income
+                </a>
+                <a href="saving_plans.html" class="nav-link active">
+                    <i class="fas fa-piggy-bank"></i>
+                    Saving Plans
+                </a>
+                <a href="Expenses.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    Expenses
+                </a>
+                <a href="goals.html" class="nav-link">
+                    <i class="fas fa-bullseye"></i>
+                    Goals
+                </a>
+                <a href="Food_Budget.html" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    Food Budget
+                </a>
+                <a href="Data_Plan.html" class="nav-link">
+                    <i class="fas fa-mobile-alt"></i>
+                    Data Plans
+                </a>
+                <a href="find_store.html" class="nav-link">
+                    <i class="fas fa-location-dot"></i>
+                    Find Store
+                </a>
+            </div>
+
+            <div class="progress-card">
+                <h3>Monthly Goal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%;"></div>
+                </div>
+                <p class="progress-text">₦670 of ₦1,000</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Saving Plans</h1>
+                    <p>Personalized saving recommendations based on your spending habits</p>
+                </div>
+                <button class="action-button" onclick="createPlan()">
+                    <i class="fas fa-plus"></i>
+                    Create Plan
+                </button>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Total Saved</h3>
+                            <div class="stat-value">₦670</div>
+                            <p class="stat-description">This month</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Active Plans</h3>
+                            <div class="stat-value">3</div>
+                            <p class="stat-description">In progress</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Savings Rate</h3>
+                            <div class="stat-value">22%</div>
+                            <p class="stat-description">Of income</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Savings Plans -->
+                <div class="plans-section">
+                    <div class="plans-header">
+                        <h2>
+                            <i class="fas fa-seedling"></i>
+                            Recommended Plans
+                        </h2>
+                        <div class="plan-filters">
+                            <button class="filter-btn active" onclick="filterPlans('all')">All</button>
+                            <button class="filter-btn" onclick="filterPlans('beginner')">Beginner</button>
+                            <button class="filter-btn" onclick="filterPlans('intermediate')">Intermediate</button>
+                            <button class="filter-btn" onclick="filterPlans('advanced')">Advanced</button>
+                        </div>
+                    </div>
+
+                    <div class="plan-card recommended">
+                        <div class="plan-badge">Recommended</div>
+                        <div class="plan-title">50/30/20 Rule</div>
+                        <div class="plan-description">
+                            A simple budgeting method: 50% for needs, 30% for wants, and 20% for savings and debt repayment.
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Easy to follow and implement</li>
+                            <li><i class="fas fa-check"></i> Balanced approach to spending</li>
+                            <li><i class="fas fa-check"></i> Builds consistent saving habits</li>
+                            <li><i class="fas fa-check"></i> Perfect for beginners</li>
+                        </ul>
+                        <div class="plan-savings">
+                            <div>
+                                <div class="savings-amount">₦250/month</div>
+                                <div class="savings-period">Based on ₦1,250 income</div>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="plan-btn primary" onclick="adoptPlan('50-30-20')">Adopt Plan</button>
+                            <button class="plan-btn" onclick="learnMore('50-30-20')">Learn More</button>
+                        </div>
+                    </div>
+
+                    <div class="plan-card">
+                        <div class="plan-title">Envelope Method</div>
+                        <div class="plan-description">
+                            Allocate cash for different spending categories in separate "envelopes" to control expenses.
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Visual spending tracking</li>
+                            <li><i class="fas fa-check"></i> Prevents overspending</li>
+                            <li><i class="fas fa-check"></i> Cash-based control</li>
+                            <li><i class="fas fa-check"></i> Great for discipline building</li>
+                        </ul>
+                        <div class="plan-savings">
+                            <div>
+                                <div class="savings-amount">₦200/month</div>
+                                <div class="savings-period">Estimated savings</div>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="plan-btn primary" onclick="adoptPlan('envelope')">Adopt Plan</button>
+                            <button class="plan-btn" onclick="learnMore('envelope')">Learn More</button>
+                        </div>
+                    </div>
+
+                    <div class="plan-card">
+                        <div class="plan-title">Pay Yourself First</div>
+                        <div class="plan-description">
+                            Save a predetermined amount immediately when you receive income, before any other expenses.
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Prioritizes savings</li>
+                            <li><i class="fas fa-check"></i> Automated approach</li>
+                            <li><i class="fas fa-check"></i> Builds wealth faster</li>
+                            <li><i class="fas fa-check"></i> Reduces spending temptation</li>
+                        </ul>
+                        <div class="plan-savings">
+                            <div>
+                                <div class="savings-amount">₦300/month</div>
+                                <div class="savings-period">Higher savings potential</div>
+                            </div>
+                        </div>
+                        <div class="plan-actions">
+                            <button class="plan-btn primary" onclick="adoptPlan('pay-first')">Adopt Plan</button>
+                            <button class="plan-btn" onclick="learnMore('pay-first')">Learn More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Widgets -->
+                <div>
+                    <!-- Savings Calculator -->
+                    <div class="sidebar-widget">
+                        <div class="widget-title">
+                            <i class="fas fa-calculator"></i>
+                            Savings Calculator
+                        </div>
+                        <div class="calculator-input">
+                            <label>Monthly Income</label>
+                            <input type="number" id="incomeInput" placeholder="Enter your income" value="1250">
+                        </div>
+                        <div class="calculator-input">
+                            <label>Savings Percentage</label>
+                            <input type="number" id="percentageInput" placeholder="Savings %" value="20" min="1" max="100">
+                        </div>
+                        <button class="calculate-btn" onclick="calculateSavings()">Calculate</button>
+                        <div class="calculator-result" id="calculatorResult" style="display: none;">
+                            <div class="result-amount" id="resultAmount">₦250</div>
+                            <div class="result-label">Monthly Savings</div>
+                        </div>
+                    </div>
+
+                    <!-- Savings Tips -->
+                    <div class="sidebar-widget">
+                        <div class="widget-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Quick Tips
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Round Up Savings</h4>
+                                <p>Round up purchases to the nearest naira and save the difference</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>24-Hour Rule</h4>
+                                <p>Wait 24 hours before making non-essential purchases</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>Cook at Home</h4>
+                                <p>Preparing meals at home can save up to ₦500 per month</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Tracker -->
+                    <div class="sidebar-widget">
+                        <div class="widget-title">
+                            <i class="fas fa-chart-bar"></i>
+                            This Month
+                        </div>
+                        <div class="tracker-item">
+                            <div class="tracker-info">
+                                <h4>Week 1</h4>
+                                <p>Target: ₦167</p>
+                            </div>
+                            <div class="tracker-amount">₦170</div>
+                        </div>
+                        <div class="tracker-item">
+                            <div class="tracker-info">
+                                <h4>Week 2</h4>
+                                <p>Target: ₦167</p>
+                            </div>
+                            <div class="tracker-amount">₦165</div>
+                        </div>
+                        <div class="tracker-item">
+                            <div class="tracker-info">
+                                <h4>Week 3</h4>
+                                <p>Target: ₦167</p>
+                            </div>
+                            <div class="tracker-amount">₦180</div>
+                        </div>
+                        <div class="tracker-item">
+                            <div class="tracker-info">
+                                <h4>Week 4</h4>
+                                <p>Target: ₦167</p>
+                            </div>
+                            <div class="tracker-amount">₦155</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Strategies -->
+            <div class="strategies-section">
+                <div class="plans-header">
+                    <h2>
+                        <i class="fas fa-chess"></i>
+                        Advanced Strategies
+                    </h2>
+                </div>
+
+                <div class="strategies-grid">
+                    <div class="strategy-card" onclick="learnStrategy('automation')">
+                        <div class="strategy-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="strategy-title">Automated Savings</div>
+                        <div class="strategy-description">
+                            Set up automatic transfers to your savings account immediately after receiving income.
+                        </div>
+                        <div class="strategy-benefit">
+                            <i class="fas fa-arrow-up"></i>
+                            Increase savings by 15%
+                        </div>
+                    </div>
+
+                    <div class="strategy-card" onclick="learnStrategy('challenge')">
+                        <div class="strategy-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="strategy-title">52-Week Challenge</div>
+                        <div class="strategy-description">
+                            Save increasing amounts each week, starting with ₦10 in week 1, ₦20 in week 2, and so on.
+                        </div>
+                        <div class="strategy-benefit">
+                            <i class="fas fa-arrow-up"></i>
+                            Save ₦13,780 in a year
+                        </div>
+                    </div>
+
+                    <div class="strategy-card" onclick="learnStrategy('investment')">
+                        <div class="strategy-icon">
+                            <i class="fas fa-chart-growth"></i>
+                        </div>
+                        <div class="strategy-title">Micro-Investing</div>
+                        <div class="strategy-description">
+                            Start investing small amounts regularly in low-risk investment options to grow your savings.
+                        </div>
+                        <div class="strategy-benefit">
+                            <i class="fas fa-arrow-up"></i>
+                            Potential 5-8% annual returns
+                        </div>
+                    </div>
+
+                    <div class="strategy-card" onclick="learnStrategy('emergency')">
+                        <div class="strategy-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="strategy-title">Emergency Fund</div>
+                        <div class="strategy-description">
+                            Build an emergency fund covering 3-6 months of expenses for financial security.
+                        </div>
+                        <div class="strategy-benefit">
+                            <i class="fas fa-arrow-up"></i>
+                            Financial peace of mind
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile navigation functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            hamburgerBtn.classList.toggle('active');
+            sidebar.classList.toggle('hidden');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when clicking on navigation links on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                hamburgerBtn.classList.remove('active');
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+        });
+
+        // Initialize sidebar state based on screen size
+        if (window.innerWidth <= 1024) {
+            sidebar.classList.add('hidden');
+        }
+
+        // Savings plan functionality
+        function createPlan() {
+            showNotification('Create Custom Plan feature coming soon!', 'savings');
+        }
+
+        function filterPlans(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const categoryNames = {
+                'all': 'all plans',
+                'beginner': 'beginner plans',
+                'intermediate': 'intermediate plans',
+                'advanced': 'advanced plans'
+            };
+            
+            showNotification(`Showing ${categoryNames[category]}`, 'info');
+        }
+
+        function adoptPlan(planId) {
+            const planNames = {
+                '50-30-20': '50/30/20 Rule',
+                'envelope': 'Envelope Method',
+                'pay-first': 'Pay Yourself First'
+            };
+            
+            showNotification(`Adopted ${planNames[planId]} successfully!`, 'success');
+        }
+
+        function learnMore(planId) {
+            const planNames = {
+                '50-30-20': '50/30/20 Rule',
+                'envelope': 'Envelope Method',
+                'pay-first': 'Pay Yourself First'
+            };
+            
+            showNotification(`Learning more about ${planNames[planId]}...`, 'info');
+        }
+
+        function learnStrategy(strategyId) {
+            const strategyNames = {
+                'automation': 'Automated Savings',
+                'challenge': '52-Week Challenge',
+                'investment': 'Micro-Investing',
+                'emergency': 'Emergency Fund'
+            };
+            
+            showNotification(`Learning about ${strategyNames[strategyId]} strategy`, 'savings');
+        }
+
+        // Savings calculator
+        function calculateSavings() {
+            const income = parseFloat(document.getElementById('incomeInput').value) || 0;
+            const percentage = parseFloat(document.getElementById('percentageInput').value) || 0;
+            
+            if (income > 0 && percentage > 0) {
+                const savings = (income * percentage) / 100;
+                const resultElement = document.getElementById('resultAmount');
+                const resultContainer = document.getElementById('calculatorResult');
+                
+                resultElement.textContent = `₦${savings.toFixed(0)}`;
+                resultContainer.style.display = 'block';
+                
+                showNotification(`You could save ₦${savings.toFixed(0)} per month!`, 'savings');
+            } else {
+                showNotification('Please enter valid income and percentage values', 'warning');
+            }
+        }
+
+        // Auto-calculate on input change
+        document.getElementById('incomeInput').addEventListener('input', calculateSavings);
+        document.getElementById('percentageInput').addEventListener('input', calculateSavings);
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                'success': 'var(--income-color)',
+                'error': 'var(--expense-color)',
+                'warning': 'var(--warning-color)',
+                'info': 'var(--primary-color)',
+                'savings': 'var(--savings-color)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                z-index: 2000;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+            document.body.style.transition = 'opacity 0.3s ease';
+        });
+
+        // Initialize calculator on page load
+        setTimeout(() => {
+            calculateSavings();
+        }, 1000);
+
+        // Add click animations to interactive elements
+        document.querySelectorAll('.plan-card, .strategy-card, .tip-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Animate progress bars and cards on load
+        setTimeout(() => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, Math.random() * 500 + 200);
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

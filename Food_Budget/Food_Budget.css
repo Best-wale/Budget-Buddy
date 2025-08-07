@@ -1,0 +1,254 @@
+:root {
+  --primary-color: rgb(90, 186, 247);
+  --income-color: lightgreen;
+  --expense-color: red;
+  --warning-color: orange;
+  --neutral-bg: #f8fafb;
+  --muted-bg: #eff2f3;
+  --text-muted: #6b7280;
+  --text-dark: #202426;
+  --soft-border: rgb(219, 224, 230);
+  --soft-shadow: rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--neutral-bg);
+  font-size: 1rem;
+}
+
+.Food_Budget {
+  display: flex;
+}
+
+.content-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: white;
+  color: var(--text-muted);
+  width: 280px;
+  padding: 20px 15px;
+  border-radius: 20px;
+  position: fixed;
+  box-shadow: 2px 0 8px var(--soft-shadow);
+  height: 100%;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  font-size: 20px;
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.title span {
+  color: black;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.title h3 {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.navbar {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.navbar a {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+.navbar a:hover {
+  background-color: var(--muted-bg);
+  color: var(--text-dark);
+}
+
+.navbar .active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.navbar a i {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+footer {
+  background-color: var(--muted-bg);
+  border-radius: 10px;
+  padding: 10px;
+  width: 85%;
+  margin-top: auto;
+  margin-bottom: 50px;
+  box-shadow: 0 -2px 5px var(--soft-shadow);
+  border-top: 1px solid #dcdcdc;
+}
+
+footer h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: black;
+}
+
+footer p {
+  font-size: 16px;
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+.bar-outer {
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar-inner {
+  height: 100%;
+  background: linear-gradient(to right, var(--income-color), #a0e7a0);
+  width: 67%;
+  border-radius: 10px;
+  transition: width 0.4s ease-in-out;
+}
+
+.content-right {
+  margin-left: 280px; /* match .content-left width */
+  padding: 20px;
+  width: calc(100% - 280px); /* adjust this too */
+  overflow-x: hidden;
+}
+
+
+.head{
+    display: flex;
+    justify-content: space-between;
+}
+
+.head .title h3{
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.head .title p{
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+.head .btn button{
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    border: none;
+    height: 3rem;
+    width: 12rem;
+    color: white;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.block-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.block {
+  background-color: white;
+  border-radius: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 15px;
+  border: 1px solid var(--soft-border);
+  margin-right: 10px;
+}
+
+.block h4 {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.block h2 {
+  font-size: 20px;
+  font-weight: 200;
+  margin-bottom: 0px;
+}
+
+.block p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-top: 5px;
+} 
+
+.block .icon {
+  margin-top: 26px;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+}
+
+.coming-soon-container{
+    background-color: white;
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 1px solid var(--soft-border);
+}
+
+.coming-soon-container h2{
+    font-size: 25px;
+    font-weight: 500;
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+.coming-soon-container-content{
+    width: 43%;
+    margin: 40px auto;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.coming-soon-container-content span{
+    font-size: 5rem;
+    color: var(--text-muted);
+}
+
+.coming-soon-container-content h3{
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.coming-soon-container-content p{
+    font-size: 23px;
+    color: var(--text-muted);
+    margin-bottom: 5rem;
+}

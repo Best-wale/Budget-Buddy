@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goals - Campus Budget Buddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #5A5CDE;
+            --primary-hover: #4A4BC9;
+            --income-color: #10B981;
+            --expense-color: #EF4444;
+            --warning-color: #F59E0B;
+            --goal-color: #8B5CF6;
+            --achievement-color: #F59E0B;
+            --neutral-bg: #F8FAFC;
+            --muted-bg: #F1F5F9;
+            --text-muted: #64748B;
+            --text-dark: #1E293B;
+            --soft-border: #E2E8F0;
+            --soft-shadow: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--neutral-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --neutral-bg: #181818;
+                --muted-bg: #2A2A2A;
+                --text-muted: #9CA3AF;
+                --text-dark: #F8FAFC;
+                --soft-border: #374151;
+                --soft-shadow: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            width: 280px;
+            padding: 24px 20px;
+            border-right: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .brand-info h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .brand-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .navigation {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--muted-bg);
+            color: var(--text-dark);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--muted-bg), white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: auto;
+            border: 1px solid var(--soft-border);
+        }
+
+        .progress-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--soft-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--income-color), #34D399);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--soft-border);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background-color: var(--muted-bg);
+        }
+
+        .hamburger-line {
+            width: 20px;
+            height: 2px;
+            background-color: var(--text-dark);
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .hamburger.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--goal-color), #7C3AED);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px var(--goal-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--goal-color), var(--primary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--goal-color);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+        }
+
+        /* Goal Categories */
+        .categories-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 32px;
+        }
+
+        .categories-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .categories-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .categories-header h2 i {
+            margin-right: 12px;
+            color: var(--goal-color);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--soft-border);
+            border-radius: 8px;
+            background: var(--muted-bg);
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--goal-color);
+            color: white;
+            border-color: var(--goal-color);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .category-card {
+            background: var(--muted-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--soft-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .category-card:hover {
+            background: var(--goal-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--goal-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .category-card:hover .category-icon {
+            background: white;
+            color: var(--goal-color);
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .category-card:hover .category-name,
+        .category-card:hover .category-count {
+            color: white;
+        }
+
+        .category-count {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Active Goals */
+        .goals-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 32px;
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .goals-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .goals-header h2 i {
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+
+        .add-goal-btn {
+            background: var(--muted-bg);
+            border: 1px solid var(--soft-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-goal-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .goal-card {
+            background: var(--muted-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--soft-border);
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .goal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .goal-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .goal-meta {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .goal-status {
+            text-align: right;
+        }
+
+        .goal-percentage {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--goal-color);
+            margin-bottom: 4px;
+        }
+
+        .goal-deadline {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(139, 92, 246, 0.1);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .goal-progress {
+            margin-bottom: 16px;
+        }
+
+        .goal-progress-bar {
+            height: 8px;
+            background: var(--soft-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--goal-color), var(--primary-color));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .goal-amounts {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .goal-saved {
+            color: var(--income-color);
+        }
+
+        .goal-target {
+            color: var(--text-muted);
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-action-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--soft-border);
+            border-radius: 6px;
+            background: white;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .goal-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Achievements */
+        .achievements-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 32px;
+        }
+
+        .achievements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .achievements-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .achievements-header h2 i {
+            margin-right: 12px;
+            color: var(--achievement-color);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .achievement-item {
+            background: var(--muted-bg);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--soft-border);
+            transition: all 0.2s ease;
+        }
+
+        .achievement-item.unlocked {
+            background: linear-gradient(135deg, var(--achievement-color), #F59E0B);
+            color: white;
+        }
+
+        .achievement-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .achievement-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--achievement-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 20px;
+        }
+
+        .achievement-item.unlocked .achievement-icon {
+            background: white;
+            color: var(--achievement-color);
+        }
+
+        .achievement-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .achievement-item.unlocked .achievement-desc {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Timeline */
+        .timeline-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid var(--soft-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .timeline-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-header h2 i {
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--muted-bg);
+            border-radius: 12px;
+            border: 1px solid var(--soft-border);
+        }
+
+        .timeline-date {
+            min-width: 80px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .timeline-content {
+            flex: 1;
+            margin-left: 16px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .timeline-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .timeline-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--income-color);
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .mobile-nav {
+                display: block;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 16px;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-title h1 {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .categories-section,
+            .goals-section,
+            .achievements-section,
+            .timeline-section {
+                padding: 24px;
+            }
+
+            .action-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-nav {
+                top: 16px;
+                left: 16px;
+            }
+
+            .main-content {
+                padding: 16px 12px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .categories-section,
+            .goals-section,
+            .achievements-section,
+            .timeline-section {
+                padding: 20px;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+
+        /* Dark mode specific styles */
+        @media (prefers-color-scheme: dark) {
+            .sidebar,
+            .stat-card,
+            .categories-section,
+            .goals-section,
+            .achievements-section,
+            .timeline-section,
+            .mobile-nav {
+                background-color: #2A2A2A;
+                border-color: var(--soft-border);
+            }
+
+            .progress-card {
+                background: linear-gradient(135deg, var(--muted-bg), #2A2A2A);
+            }
+
+            .category-card,
+            .goal-card,
+            .achievement-item,
+            .timeline-item {
+                background: #374151;
+                border-color: var(--soft-border);
+            }
+
+            .filter-btn,
+            .add-goal-btn,
+            .goal-action-btn {
+                background: #374151;
+                border-color: var(--soft-border);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Navigation Button -->
+        <div class="mobile-nav">
+            <button class="hamburger" id="hamburgerBtn">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+        </div>
+
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>Campus</h1>
+                    <p>Budget Buddy</p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-house"></i>
+                    Home
+                </a>
+                <a href="track_income.html" class="nav-link">
+                    <i class="fas fa-dollar-sign"></i>
+                    Track Income
+                </a>
+                <a href="saving_plans.html" class="nav-link">
+                    <i class="fas fa-piggy-bank"></i>
+                    Saving Plans
+                </a>
+                <a href="Expenses.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    Expenses
+                </a>
+                <a href="goals.html" class="nav-link active">
+                    <i class="fas fa-bullseye"></i>
+                    Goals
+                </a>
+                <a href="Food_Budget.html" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    Food Budget
+                </a>
+                <a href="Data_Plan.html" class="nav-link">
+                    <i class="fas fa-mobile-alt"></i>
+                    Data Plans
+                </a>
+                <a href="find_store.html" class="nav-link">
+                    <i class="fas fa-location-dot"></i>
+                    Find Store
+                </a>
+            </div>
+
+            <div class="progress-card">
+                <h3>Monthly Goal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%;"></div>
+                </div>
+                <p class="progress-text">₦670 of ₦1,000</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Savings Goals</h1>
+                    <p>Set specific goals and track your progress visually</p>
+                </div>
+                <button class="action-button" onclick="createGoal()">
+                    <i class="fas fa-plus"></i>
+                    Create Goal
+                </button>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Active Goals</h3>
+                            <div class="stat-value">2</div>
+                            <p class="stat-description">In progress</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Completed Goals</h3>
+                            <div class="stat-value">7</div>
+                            <p class="stat-description">All time achievements</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Next Deadline</h3>
+                            <div class="stat-value">12</div>
+                            <p class="stat-description">Days remaining</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal Categories -->
+            <div class="categories-section">
+                <div class="categories-header">
+                    <h2>
+                        <i class="fas fa-tags"></i>
+                        Goal Categories
+                    </h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterGoals('all')">All</button>
+                        <button class="filter-btn" onclick="filterGoals('savings')">Savings</button>
+                        <button class="filter-btn" onclick="filterGoals('academic')">Academic</button>
+                        <button class="filter-btn" onclick="filterGoals('personal')">Personal</button>
+                        <button class="filter-btn" onclick="filterGoals('emergency')">Emergency</button>
+                    </div>
+                </div>
+
+                <div class="categories-grid">
+                    <div class="category-card" onclick="selectCategory('savings')">
+                        <div class="category-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="category-name">Savings</div>
+                        <div class="category-count">3 active goals</div>
+                    </div>
+
+                    <div class="category-card" onclick="selectCategory('academic')">
+                        <div class="category-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="category-name">Academic</div>
+                        <div class="category-count">1 active goal</div>
+                    </div>
+
+                    <div class="category-card" onclick="selectCategory('personal')">
+                        <div class="category-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="category-name">Personal</div>
+                        <div class="category-count">2 active goals</div>
+                    </div>
+
+                    <div class="category-card" onclick="selectCategory('emergency')">
+                        <div class="category-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="category-name">Emergency</div>
+                        <div class="category-count">1 active goal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Goals -->
+            <div class="goals-section">
+                <div class="goals-header">
+                    <h2>
+                        <i class="fas fa-target"></i>
+                        Active Goals
+                    </h2>
+                    <button class="add-goal-btn" onclick="createGoal()">
+                        + Add Goal
+                    </button>
+                </div>
+
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <div class="goal-info">
+                            <h3>Emergency Fund</h3>
+                            <div class="goal-meta">Started 2 months ago • Savings</div>
+                        </div>
+                        <div class="goal-status">
+                            <div class="goal-percentage">67%</div>
+                            <div class="goal-deadline">30 days left</div>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-progress">
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" style="width: 67%;"></div>
+                        </div>
+                        <div class="goal-amounts">
+                            <span class="goal-saved">₦670 saved</span>
+                            <span class="goal-target">₦1,000 goal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-actions">
+                        <button class="goal-action-btn" onclick="addToGoal('emergency-fund')">Add Money</button>
+                        <button class="goal-action-btn" onclick="editGoal('emergency-fund')">Edit</button>
+                        <button class="goal-action-btn" onclick="viewGoal('emergency-fund')">Details</button>
+                    </div>
+                </div>
+
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <div class="goal-info">
+                            <h3>New Laptop</h3>
+                            <div class="goal-meta">Started 1 month ago • Academic</div>
+                        </div>
+                        <div class="goal-status">
+                            <div class="goal-percentage">23%</div>
+                            <div class="goal-deadline">90 days left</div>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-progress">
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" style="width: 23%;"></div>
+                        </div>
+                        <div class="goal-amounts">
+                            <span class="goal-saved">₦1,150 saved</span>
+                            <span class="goal-target">₦5,000 goal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="goal-actions">
+                        <button class="goal-action-btn" onclick="addToGoal('laptop')">Add Money</button>
+                        <button class="goal-action-btn" onclick="editGoal('laptop')">Edit</button>
+                        <button class="goal-action-btn" onclick="viewGoal('laptop')">Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="achievements-section">
+                <div class="achievements-header">
+                    <h2>
+                        <i class="fas fa-trophy"></i>
+                        Achievements
+                    </h2>
+                </div>
+
+                <div class="achievements-grid">
+                    <div class="achievement-item unlocked">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="achievement-title">First Goal</div>
+                        <div class="achievement-desc">Created your first goal</div>
+                    </div>
+
+                    <div class="achievement-item unlocked">
+                        <div class="achievement-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="achievement-title">Streak Master</div>
+                        <div class="achievement-desc">7 days of saving</div>
+                    </div>
+
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="achievement-title">Goal Crusher</div>
+                        <div class="achievement-desc">Complete 5 goals</div>
+                    </div>
+
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="achievement-title">Diamond Saver</div>
+                        <div class="achievement-desc">Save ₦10,000</div>
+                    </div>
+
+                    <div class="achievement-item unlocked">
+                        <div class="achievement-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="achievement-title">Quick Start</div>
+                        <div class="achievement-desc">Reached 25% of goal</div>
+                    </div>
+
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <div class="achievement-title">Peak Performer</div>
+                        <div class="achievement-desc">Complete goal early</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Timeline -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        Recent Activity
+                    </h2>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Today</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Added to Emergency Fund</div>
+                        <div class="timeline-desc">Regular weekly contribution</div>
+                    </div>
+                    <div class="timeline-amount">+₦50</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">2 days ago</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Achievement Unlocked</div>
+                        <div class="timeline-desc">Earned "Streak Master" badge</div>
+                    </div>
+                    <div class="timeline-amount">🏆</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">1 week ago</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Created New Goal</div>
+                        <div class="timeline-desc">Started saving for laptop</div>
+                    </div>
+                    <div class="timeline-amount">🎯</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">2 weeks ago</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Goal Milestone</div>
+                        <div class="timeline-desc">Reached 50% of emergency fund</div>
+                    </div>
+                    <div class="timeline-amount">🎉</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile navigation functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            hamburgerBtn.classList.toggle('active');
+            sidebar.classList.toggle('hidden');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when clicking on navigation links on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                hamburgerBtn.classList.remove('active');
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+        });
+
+        // Initialize sidebar state based on screen size
+        if (window.innerWidth <= 1024) {
+            sidebar.classList.add('hidden');
+        }
+
+        // Goals functionality
+        function createGoal() {
+            showNotification('Create Goal feature coming soon!', 'goal');
+        }
+
+        function filterGoals(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const categoryNames = {
+                'all': 'all goals',
+                'savings': 'savings goals',
+                'academic': 'academic goals',
+                'personal': 'personal goals',
+                'emergency': 'emergency goals'
+            };
+            
+            showNotification(`Showing ${categoryNames[category]}`, 'info');
+        }
+
+        function selectCategory(category) {
+            const categoryNames = {
+                'savings': 'Savings Goals',
+                'academic': 'Academic Goals',
+                'personal': 'Personal Goals',
+                'emergency': 'Emergency Goals'
+            };
+            
+            showNotification(`Viewing ${categoryNames[category]}`, 'goal');
+        }
+
+        function addToGoal(goalId) {
+            const goalNames = {
+                'emergency-fund': 'Emergency Fund',
+                'laptop': 'New Laptop'
+            };
+            
+            showNotification(`Adding money to ${goalNames[goalId]}...`, 'success');
+        }
+
+        function editGoal(goalId) {
+            const goalNames = {
+                'emergency-fund': 'Emergency Fund',
+                'laptop': 'New Laptop'
+            };
+            
+            showNotification(`Editing ${goalNames[goalId]} settings`, 'info');
+        }
+
+        function viewGoal(goalId) {
+            const goalNames = {
+                'emergency-fund': 'Emergency Fund',
+                'laptop': 'New Laptop'
+            };
+            
+            showNotification(`Viewing ${goalNames[goalId]} details`, 'goal');
+        }
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                'success': 'var(--income-color)',
+                'error': 'var(--expense-color)',
+                'warning': 'var(--warning-color)',
+                'info': 'var(--primary-color)',
+                'goal': 'var(--goal-color)',
+                'achievement': 'var(--achievement-color)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                z-index: 2000;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+            document.body.style.transition = 'opacity 0.3s ease';
+        });
+
+        // Animate progress bars on load
+        setTimeout(() => {
+            const progressBars = document.querySelectorAll('.progress-fill, .goal-progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, Math.random() * 500 + 200);
+            });
+        }, 1000);
+
+        // Add click animations to interactive elements
+        document.querySelectorAll('.category-card, .goal-card, .achievement-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add achievement unlock animation
+        setTimeout(() => {
+            const unlockedAchievements = document.querySelectorAll('.achievement-item.unlocked');
+            unlockedAchievements.forEach((achievement, index) => {
+                setTimeout(() => {
+                    achievement.style.animation = 'pulse 0.5s ease';
+                }, index * 200);
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

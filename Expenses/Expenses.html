@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses & Reminders - Campus Budget Buddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="Expenses.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Navigation Button -->
+        <div class="mobile-nav">
+            <button class="hamburger" id="hamburgerBtn">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+        </div>
+
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>Campus</h1>
+                    <p>Budget Buddy</p>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-house"></i>
+                    Home
+                </a>
+                <a href="track_income.html" class="nav-link">
+                    <i class="fas fa-dollar-sign"></i>
+                    Track Income
+                </a>
+                <a href="saving_plans.html" class="nav-link">
+                    <i class="fas fa-piggy-bank"></i>
+                    Saving Plans
+                </a>
+                <a href="Expenses.html" class="nav-link active">
+                    <i class="fas fa-bell"></i>
+                    Expenses
+                </a>
+                <a href="goals.html" class="nav-link">
+                    <i class="fas fa-bullseye"></i>
+                    Goals
+                </a>
+                <a href="Food_Budget.html" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    Food Budget
+                </a>
+                <a href="Data_Plan.html" class="nav-link">
+                    <i class="fas fa-mobile-alt"></i>
+                    Data Plans
+                </a>
+                <a href="find_store.html" class="nav-link">
+                    <i class="fas fa-location-dot"></i>
+                    Find Store
+                </a>
+            </div>
+
+            <div class="progress-card">
+                <h3>Monthly Goal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 67%;"></div>
+                </div>
+                <p class="progress-text">₦670 of ₦1,000</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Expenses & Reminders</h1>
+                    <p>Track expenses and set reminders for upcoming bills</p>
+                </div>
+                <button class="action-button" onclick="addExpense()">
+                    <i class="fas fa-plus"></i>
+                    Add Expense
+                </button>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>This Month</h3>
+                            <div class="stat-value">₦980</div>
+                            <p class="stat-description">Total expenses</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Pending Reminders</h3>
+                            <div class="stat-value">5</div>
+                            <p class="stat-description">Due soon</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-info">
+                            <h3>Budget Status</h3>
+                            <div class="stat-value">78%</div>
+                            <p class="stat-description">Budget used</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Categories -->
+            <div class="expense-categories">
+                <h2>
+                    <i class="fas fa-chart-pie"></i>
+                    Expense Categories
+                </h2>
+                <div class="categories-grid">
+                    <div class="category-item" onclick="viewCategory('food')">
+                        <div class="category-header">
+                            <span class="category-name">Food & Dining</span>
+                            <div class="category-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                        </div>
+                        <div class="category-amount">₦450</div>
+                        <div class="category-budget">₦500 budget</div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: 90%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="category-item" onclick="viewCategory('transport')">
+                        <div class="category-header">
+                            <span class="category-name">Transportation</span>
+                            <div class="category-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                        </div>
+                        <div class="category-amount">₦200</div>
+                        <div class="category-budget">₦250 budget</div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: 80%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="category-item" onclick="viewCategory('entertainment')">
+                        <div class="category-header">
+                            <span class="category-name">Entertainment</span>
+                            <div class="category-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                        </div>
+                        <div class="category-amount">₦150</div>
+                        <div class="category-budget">₦200 budget</div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="category-item" onclick="viewCategory('shopping')">
+                        <div class="category-header">
+                            <span class="category-name">Shopping</span>
+                            <div class="category-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                        </div>
+                        <div class="category-amount">₦180</div>
+                        <div class="category-budget">₦150 budget</div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: 120%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reminders Section -->
+            <div class="reminders-section">
+                <div class="reminders-header">
+                    <h2>
+                        <i class="fas fa-bell"></i>
+                        Upcoming Reminders
+                    </h2>
+                    <button class="add-reminder-btn" onclick="addReminder()">
+                        + Add Reminder
+                    </button>
+                </div>
+
+                <div class="reminder-item">
+                    <div class="reminder-details">
+                        <div class="reminder-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="reminder-info">
+                            <h4>Mobile Data Plan</h4>
+                            <p>Due in 2 days</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="reminder-amount">₦25</span>
+                        <span class="reminder-status due-soon">Due Soon</span>
+                    </div>
+                </div>
+
+                <div class="reminder-item">
+                    <div class="reminder-details">
+                        <div class="reminder-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="reminder-info">
+                            <h4>Spotify Subscription</h4>
+                            <p>Due tomorrow</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="reminder-amount">₦15</span>
+                        <span class="reminder-status due-soon">Due Soon</span>
+                    </div>
+                </div>
+
+                <div class="reminder-item">
+                    <div class="reminder-details">
+                        <div class="reminder-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="reminder-info">
+                            <h4>Hostel Rent</h4>
+                            <p>Overdue by 1 day</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="reminder-amount">₦500</span>
+                        <span class="reminder-status overdue">Overdue</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Card -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h2>Smart Expense Tracking</h2>
+                <p>
+                    Set customizable reminders for bills, subscriptions, and
+                    recurring expenses. Track your spending patterns and get
+                    alerts when you're approaching your budget limits.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Mobile navigation functionality
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            hamburgerBtn.classList.toggle('active');
+            sidebar.classList.toggle('hidden');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when clicking on navigation links on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                hamburgerBtn.classList.remove('active');
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+        });
+
+        // Initialize sidebar state based on screen size
+        if (window.innerWidth <= 1024) {
+            sidebar.classList.add('hidden');
+        }
+
+        // Expense functionality
+        function addExpense() {
+            showNotification('Add Expense feature coming soon!', 'error');
+        }
+
+        function addReminder() {
+            showNotification('Add Reminder feature coming soon!', 'warning');
+        }
+
+        function viewCategory(category) {
+            showNotification(`Viewing ${category} category details coming soon!`, 'info');
+        }
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                'success': 'var(--income-color)',
+                'error': 'var(--expense-color)',
+                'warning': 'var(--warning-color)',
+                'info': 'var(--primary-color)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                z-index: 2000;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+            document.body.style.transition = 'opacity 0.3s ease';
+        });
+
+        // Animate budget bars on load
+        setTimeout(() => {
+            const budgetBars = document.querySelectorAll('.budget-fill');
+            budgetBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, Math.random() * 500 + 200);
+            });
+        }, 1000);
+
+        // Add click animations to category items
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add click animations to reminder items
+        document.querySelectorAll('.reminder-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'translateX(8px)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
